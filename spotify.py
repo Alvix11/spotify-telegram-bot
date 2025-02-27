@@ -1,0 +1,95 @@
+# spotify.py
+
+import requests
+import base64
+from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, LOGGER
+
+def obtener_token():
+    """Obtiene el token de acceso de Spotify."""
+    auth_string = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+    auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+
+    url = "https://accounts.spotify.com/api/token"
+    headers = {
+        "Authorization": f"Basic {auth_b64}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    data = {"grant_type": "client_credentials"}
+
+    response = requests.post(url, headers=headers, data=data)
+    if response.status_code == 200:
+        return response.json()['access_token']
+    else:
+        LOGGER.error(f"Error obteniendo el token: {response.status_code}")
+        return None
+
+def obtener_info_cancion(url):
+    """Obtiene información de un track dado el enlace de Spotify."""
+    token = obtener_token()
+    if not token:
+        return None
+
+    try:
+        track_id = url.split("/track/")[1].split("?")[0]
+    except IndexError:
+        LOGGER.error("URL no válida para un track.")
+        return None
+
+    track_url = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(track_url, headers=headers)
+    
+    if response.status_code == 200:
+        track_data = response.json()
+        nombre = track_data.get('name')
+        artists = [artist['name'] for artist in track_data['artists']]
+        album = track_data.get('album', {}).get('name')
+        fecha = track_data.get('album', {}).get('release_date')
+        imagen_url = track_data.get('album', {}).get('images', [{}])[0].get('url')
+        if len(artists) > 1:
+            various_artists = ", ".join(artists)
+            if len(nombre) > 100:
+                nombre = nombre[:97] + "..."
+                return nombre, various_artists, album, fecha, imagen_url
+            else:
+                return nombre, various_artists, album, fecha, imagen_url
+        else:
+            artist = "".join(artists)
+            if len(nombre) > 100:
+                nombre = nombre[:97] + "..."
+                return nombre, artist, album, fecha, imagen_url
+            else:
+                return nombre, artist, album, fecha, imagen_url
+            
+    else:
+        LOGGER.error(f"Error obteniendo la información del track: {response.status_code}")
+        return None
+
+def obtener_info_album(url):
+    """Obtiene información de un álbum dado el enlace de Spotify."""
+    token = obtener_token()
+    if not token:
+        return None
+
+    try:
+        album_id = url.split("/album/")[1].split("?")[0]
+    except IndexError:
+        LOGGER.error("URL no válida para un álbum.")
+        return None
+
+    album_url = f"https://api.spotify.com/v1/albums/{album_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(album_url, headers=headers)
+    
+    if response.status_code == 200:
+        album_data = response.json()
+        nombre_album = album_data.get('name')
+        artista = album_data.get('artists', [{}])[0].get('name')
+        fecha = album_data.get('release_date')
+        imagen_url = album_data.get('images', [{}])[0].get('url')
+        canciones = album_data.get('tracks', {}).get('items', [])
+        return nombre_album, artista, fecha, imagen_url, canciones
+    else:
+        LOGGER.error(f"Error obteniendo la información del álbum: {response.status_code}")
+        return None
+    
