@@ -1,11 +1,9 @@
-# spotify.py
-
 import requests
 import base64
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, LOGGER
 
 def obtener_token():
-    """Obtiene el token de acceso de Spotify."""
+    """Get the Spotify access token."""
     auth_string = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
     auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
 
@@ -24,7 +22,7 @@ def obtener_token():
         return None
 
 def obtener_info_cancion(url):
-    """Obtiene información de un track dado el enlace de Spotify."""
+    """Gets information about a track given the Spotify link."""
     token = obtener_token()
     if not token:
         return None
@@ -66,7 +64,7 @@ def obtener_info_cancion(url):
         return None
 
 def obtener_info_album(url):
-    """Obtiene información de un álbum dado el enlace de Spotify."""
+    """Gets information about an album given the Spotify link."""
     token = obtener_token()
     if not token:
         return None
@@ -92,4 +90,3 @@ def obtener_info_album(url):
     else:
         LOGGER.error(f"Error obteniendo la información del álbum: {response.status_code}")
         return None
-    
