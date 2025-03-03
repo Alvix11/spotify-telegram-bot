@@ -21,7 +21,7 @@ def obtener_token():
         LOGGER.error(f"Error obteniendo el token: {response.status_code}")
         return None
 
-def obtener_info_cancion(url):
+def get_info_song(url):
     """Gets information about a track given the Spotify link."""
     token = obtener_token()
     if not token:
@@ -39,25 +39,25 @@ def obtener_info_cancion(url):
     
     if response.status_code == 200:
         track_data = response.json()
-        nombre = track_data.get('name')
+        name = track_data.get('name')
         artists = [artist['name'] for artist in track_data['artists']]
         album = track_data.get('album', {}).get('name')
-        fecha = track_data.get('album', {}).get('release_date')
-        imagen_url = track_data.get('album', {}).get('images', [{}])[0].get('url')
+        date = track_data.get('album', {}).get('release_date')
+        image_url = track_data.get('album', {}).get('images', [{}])[0].get('url')
         if len(artists) > 1:
             various_artists = ", ".join(artists)
-            if len(nombre) > 100:
-                nombre = nombre[:97] + "..."
-                return nombre, various_artists, album, fecha, imagen_url
+            if len(name) > 100:
+                name = name[:97] + "..."
+                return name, various_artists, album, date, image_url
             else:
-                return nombre, various_artists, album, fecha, imagen_url
+                return name, various_artists, album, date, image_url
         else:
             artist = "".join(artists)
-            if len(nombre) > 100:
-                nombre = nombre[:97] + "..."
-                return nombre, artist, album, fecha, imagen_url
+            if len(name) > 100:
+                name = name[:97] + "..."
+                return name, artist, album, date, image_url
             else:
-                return nombre, artist, album, fecha, imagen_url
+                return name, artist, album, date, image_url
             
     else:
         LOGGER.error(f"Error obteniendo la información del track: {response.status_code}")
