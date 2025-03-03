@@ -1,7 +1,7 @@
 import os
 from config import MAX_SIZE, TELEGRAM_CHANNEL_ID, LOGGER
 from database import get_from_db, save_to_db
-from spotify import obtener_info_cancion, obtener_info_album
+from spotify import get_info_song, obtener_info_album
 from downloader import descargar_musica
 from parse_url import limpiar_url
 from spotify_track_utils import match_track_with_file
@@ -90,7 +90,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
                     
                     url_track = match_track_with_file(archivo, url_clean)
                     if url_track:
-                        info_cancion = obtener_info_cancion(url_track)
+                        info_cancion = get_info_song(url_track)
                         if info_cancion:
                             nombre, artistas, album, fecha, imagen_url = info_cancion
                             save_to_db(url_track, [file_id], nombre, artistas, album, fecha, imagen_url)
@@ -109,7 +109,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text("❌ No se pudo descargar la música.")
             return
 
-        info_cancion = obtener_info_cancion(url_clean)
+        info_cancion = get_info_song(url_clean)
         if info_cancion:
             nombre, artistas, album, fecha, imagen_url = info_cancion
             mensaje_info = (
