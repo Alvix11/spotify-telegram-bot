@@ -1,4 +1,3 @@
-# bot_handlers.py
 import os
 from config import MAX_SIZE, TELEGRAM_CHANNEL_ID, LOGGER
 from database import get_from_db, save_to_db
@@ -11,18 +10,17 @@ from telegram import Update
 from telegram.ext import CallbackContext, ContextTypes
 
 async def start(update: Update, context: CallbackContext) -> None:
-    """Manejador para el comando /start."""
+    """Handler for the /start command."""
     await update.message.reply_text("🎵 ¡Hola! Envíame un enlace de Spotify para descargar tus canciones preferidas.")
 
 async def manejar_errores(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Manejador para los errores."""
+    """Handler for errors."""
     LOGGER.critical(f"Error: {context.error}")
     await update.message.reply_text("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.")
 
 async def manejar_enlace(update: Update, context: CallbackContext) -> None:
-    """Procesa los enlaces enviados por el usuario."""
+    """Processes the links sent by the user."""
     if not update.message or not update.message.text:
-        # Puedes registrar el error, ignorar la actualización o enviar una respuesta por defecto.
         LOGGER.error("Update no contiene mensaje de texto: %s", update)
         return
     
@@ -37,7 +35,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
         data = get_from_db(url_clean)
 
     if data:
-        # Si la información ya está en la base de datos, reutiliza la caché.
+        # If the information is already in the database, reuse the cache.
         file_ids, nombre, artista, album, fecha, imagen_url = data
         file_ids = file_ids.split(",")
 
@@ -52,12 +50,12 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
             await context.bot.send_audio(chat_id=update.message.chat_id, audio=file_id)
         return
 
-    # No se permite procesar playlists
+    # Processing playlists is not allowed
     if "/playlist/" in url_clean:
         await update.message.reply_text("❌ No puedo descargar playlists. Solo se permiten álbumes o canciones.")
         return
 
-    # Procesar álbum
+    # Processing album
     if "/album/" in url_clean:
         album_info = obtener_info_album(url_clean)
         if album_info:
@@ -70,8 +68,6 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
             )
             await update.message.reply_photo(photo=imagen_url, caption=mensaje_info)
             await update.message.reply_text("🔄 Descargando... esto podría tardar, debido a que es un enlace nuevo en nuestra base de datos, por favor espera unos segundos.")
-
-            #urls_track = obtener_urls_album(url_clean)
             
             archivos = descargar_musica(url_clean)
             if not archivos:
@@ -105,7 +101,8 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
         else:
             await update.message.reply_text("❌ No se pudo obtener la información del álbum.")
     else:
-        # Procesar track individual
+        
+        # Processing individual track
         await update.message.reply_text("🔄 Descargando tema... Solo espera un poco.")
         archivos = descargar_musica(url_clean)
         if not archivos:
