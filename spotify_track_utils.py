@@ -4,10 +4,8 @@ import os
 from config import LOGGER
 
 def obtener_urls_album(url_album):
-    """
-    Obtiene las URLs de cada canción de un álbum de Spotify.
-    """
-    token = obtener_token()  # Asegúrate de tener una función que obtenga el token de Spotify
+    """Gets the URLs of each song in an album from Spotify."""
+    token = obtener_token()  
     if not token:
         print("Error: No se pudo obtener el token de Spotify.")
         return None
@@ -34,24 +32,24 @@ def match_track_with_file(archivo, url):
     name_file = os.path.basename(archivo)
     url_tracks = obtener_urls_album(url)
     
-    # Crear un set para las canciones ya procesadas (evitar llamadas repetidas)
+    # Create a set for already processed songs (avoid repeated calls)
     tracks_info = {}
 
-    # Iterar sobre cada URL de la canción
+    # Iterate over each URL of the song
     for url_track in url_tracks:
-        # Si la información de la canción ya fue procesada, la obtenemos del diccionario
+        # If the song information has already been processed, we get it from the dictionary.
         if url_track not in tracks_info:
             info_cancion = obtener_info_cancion(url_track)
             if info_cancion:
                 name, artist = info_cancion[:2]
                 name_song = f"{artist} - {name}.mp3"
-                # Almacenar la canción procesada en el diccionario para evitar recalcularla
+                # Store the processed song in the dictionary to avoid recalculating it
                 tracks_info[url_track] = name_song
             else:
                 LOGGER.info(f"No se pudo obtener información de la URL: {url_track}")
                 continue
         
-        # Comparar el nombre de la canción con el nombre del archivo
+        # Compare the name of the song with the file name
         if tracks_info[url_track] == name_file:
             LOGGER.info(f"Se encontró la canción: {tracks_info[url_track]}")
             return url_track
