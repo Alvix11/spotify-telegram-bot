@@ -2,7 +2,7 @@ import os
 from config import MAX_SIZE, TELEGRAM_CHANNEL_ID, LOGGER
 from database import get_from_db, save_to_db
 from spotify import get_info_song, get_info_album
-from downloader import descargar_musica
+from downloader import music_download
 from parse_url import clean_url
 from spotify_track_utils import match_track_with_file
 
@@ -69,7 +69,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
             await update.message.reply_photo(photo=imagen_url, caption=mensaje_info)
             await update.message.reply_text("🔄 Descargando... esto podría tardar, debido a que es un enlace nuevo en nuestra base de datos, por favor espera unos segundos.")
             
-            archivos = descargar_musica(url_clean)
+            archivos = music_download(url_clean)
             if not archivos:
                 await update.message.reply_text("❌ No se pudo descargar la música.")
                 return
@@ -104,7 +104,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
         
         # Processing individual track
         await update.message.reply_text("🔄 Descargando tema... Solo espera un poco.")
-        archivos = descargar_musica(url_clean)
+        archivos = music_download(url_clean)
         if not archivos:
             await update.message.reply_text("❌ No se pudo descargar la música.")
             return
