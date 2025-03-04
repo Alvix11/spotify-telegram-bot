@@ -1,7 +1,7 @@
 import os
 from config import MAX_SIZE, TELEGRAM_CHANNEL_ID, LOGGER
 from database import get_from_db, save_to_db
-from spotify import get_info_song, obtener_info_album
+from spotify import get_info_song, get_info_album
 from downloader import descargar_musica
 from parse_url import limpiar_url
 from spotify_track_utils import match_track_with_file
@@ -57,7 +57,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
 
     # Processing album
     if "/album/" in url_clean:
-        album_info = obtener_info_album(url_clean)
+        album_info = get_info_album(url_clean)
         if album_info:
             nombre_album, artista, fecha, imagen_url, canciones = album_info
             mensaje_info = (
