@@ -1,5 +1,5 @@
 import requests
-from spotify import obtener_token, obtener_info_cancion
+from spotify import obtener_token, get_info_song
 import os
 from config import LOGGER
 
@@ -39,7 +39,7 @@ def match_track_with_file(archivo, url):
     for url_track in url_tracks:
         # If the song information has already been processed, we get it from the dictionary.
         if url_track not in tracks_info:
-            info_cancion = obtener_info_cancion(url_track)
+            info_cancion = get_info_song(url_track)
             if info_cancion:
                 name, artist = info_cancion[:2]
                 name_song = f"{artist} - {name}.mp3"
