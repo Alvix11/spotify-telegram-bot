@@ -1,10 +1,10 @@
 from urllib.parse import urlparse, urlunparse
 
-def limpiar_url(url):
+def clean_url(url):
     """Parse the URL into its components."""
     parsed_url = urlparse(url)
     # Rebuild the URL without query parameters and fragments
-    clean_url = urlunparse((
+    url_clean = urlunparse((
         parsed_url.scheme,   # Protocol (https)
         parsed_url.netloc,   # Domain (open.spotify.com)
         parsed_url.path,     # Path (/track/...)
@@ -12,4 +12,4 @@ def limpiar_url(url):
         "",                  # Query (delete ?if=...)
         ""                   # Fragment (remove #...)
     ))
-    return clean_url
+    return url_clean

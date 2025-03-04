@@ -3,7 +3,7 @@ from config import MAX_SIZE, TELEGRAM_CHANNEL_ID, LOGGER
 from database import get_from_db, save_to_db
 from spotify import get_info_song, get_info_album
 from downloader import descargar_musica
-from parse_url import limpiar_url
+from parse_url import clean_url
 from spotify_track_utils import match_track_with_file
 
 from telegram import Update
@@ -31,7 +31,7 @@ async def manejar_enlace(update: Update, context: CallbackContext) -> None:
         LOGGER.warning("'%s' No es un enlace.", url)
         return
     else:
-        url_clean = limpiar_url(url)
+        url_clean = clean_url(url)
         data = get_from_db(url_clean)
 
     if data:
