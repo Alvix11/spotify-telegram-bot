@@ -1,11 +1,9 @@
-# spotify.py
-
 import requests
 import base64
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, LOGGER
 
-def obtener_token():
-    """Obtiene el token de acceso de Spotify."""
+def get_token():
+    """Get the Spotify access token."""
     auth_string = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
     auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
 
@@ -23,9 +21,9 @@ def obtener_token():
         LOGGER.error(f"Error obteniendo el token: {response.status_code}")
         return None
 
-def obtener_info_cancion(url):
-    """Obtiene información de un track dado el enlace de Spotify."""
-    token = obtener_token()
+def get_info_song(url):
+    """Gets information about a track given the Spotify link."""
+    token = get_token()
     if not token:
         return None
 
@@ -41,33 +39,33 @@ def obtener_info_cancion(url):
     
     if response.status_code == 200:
         track_data = response.json()
-        nombre = track_data.get('name')
+        name = track_data.get('name')
         artists = [artist['name'] for artist in track_data['artists']]
         album = track_data.get('album', {}).get('name')
-        fecha = track_data.get('album', {}).get('release_date')
-        imagen_url = track_data.get('album', {}).get('images', [{}])[0].get('url')
+        date = track_data.get('album', {}).get('release_date')
+        image_url = track_data.get('album', {}).get('images', [{}])[0].get('url')
         if len(artists) > 1:
             various_artists = ", ".join(artists)
-            if len(nombre) > 100:
-                nombre = nombre[:97] + "..."
-                return nombre, various_artists, album, fecha, imagen_url
+            if len(name) > 100:
+                name = name[:97] + "..."
+                return name, various_artists, album, date, image_url
             else:
-                return nombre, various_artists, album, fecha, imagen_url
+                return name, various_artists, album, date, image_url
         else:
             artist = "".join(artists)
-            if len(nombre) > 100:
-                nombre = nombre[:97] + "..."
-                return nombre, artist, album, fecha, imagen_url
+            if len(name) > 100:
+                name = name[:97] + "..."
+                return name, artist, album, date, image_url
             else:
-                return nombre, artist, album, fecha, imagen_url
+                return name, artist, album, date, image_url
             
     else:
         LOGGER.error(f"Error obteniendo la información del track: {response.status_code}")
         return None
 
-def obtener_info_album(url):
-    """Obtiene información de un álbum dado el enlace de Spotify."""
-    token = obtener_token()
+def get_info_album(url):
+    """Gets information about an album given the Spotify link."""
+    token = get_token()
     if not token:
         return None
 
@@ -83,13 +81,12 @@ def obtener_info_album(url):
     
     if response.status_code == 200:
         album_data = response.json()
-        nombre_album = album_data.get('name')
-        artista = album_data.get('artists', [{}])[0].get('name')
-        fecha = album_data.get('release_date')
-        imagen_url = album_data.get('images', [{}])[0].get('url')
-        canciones = album_data.get('tracks', {}).get('items', [])
-        return nombre_album, artista, fecha, imagen_url, canciones
+        name_album = album_data.get('name')
+        artist = album_data.get('artists', [{}])[0].get('name')
+        date = album_data.get('release_date')
+        image_url = album_data.get('images', [{}])[0].get('url')
+        songs = album_data.get('tracks', {}).get('items', [])
+        return name_album, artist, date, image_url, songs
     else:
         LOGGER.error(f"Error obteniendo la información del álbum: {response.status_code}")
         return None
-    

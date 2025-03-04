@@ -1,15 +1,15 @@
 from urllib.parse import urlparse, urlunparse
 
-def limpiar_url(url):
-    # Parsear la URL en sus componentes
+def clean_url(url):
+    """Parse the URL into its components."""
     parsed_url = urlparse(url)
-    # Reconstruir la URL sin parámetros de consulta ni fragmentos
-    clean_url = urlunparse((
-        parsed_url.scheme,   # Protocolo (https)
-        parsed_url.netloc,   # Dominio (open.spotify.com)
-        parsed_url.path,     # Ruta (/track/...)
-        "",                  # Parámetros (no se usan comúnmente)
-        "",                  # Consulta (eliminamos ?si=...)
-        ""                   # Fragmento (eliminamos #...)
+    # Rebuild the URL without query parameters and fragments
+    url_clean = urlunparse((
+        parsed_url.scheme,   # Protocol (https)
+        parsed_url.netloc,   # Domain (open.spotify.com)
+        parsed_url.path,     # Path (/track/...)
+        "",                  # Parameters (not commonly used)
+        "",                  # Query (delete ?if=...)
+        ""                   # Fragment (remove #...)
     ))
-    return clean_url
+    return url_clean

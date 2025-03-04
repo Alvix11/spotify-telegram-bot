@@ -3,14 +3,14 @@ from psycopg2 import sql
 from config import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, LOGGER
 
 def create_database():
-    """Crea la base de datos si no existe."""
+    """Create the database if it does not exist."""
     try:
-        # Conectar al servidor PostgreSQL sin especificar una base de datos
+        # Connect to PostgreSQL server without specifying a database
         conn = psycopg2.connect(dbname="postgres", user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT)
-        conn.autocommit = True  # Desactiva la transacción para ejecutar CREATE DATABASE
+        conn.autocommit = True  # Disables the transaction to execute CREATE DATABASE
         cursor = conn.cursor()
         
-        # Verificar si la base de datos ya existe
+        # Check if the database already exists
         cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = %s", (DB_NAME,))
         exists = cursor.fetchone()
         
@@ -27,11 +27,11 @@ def create_database():
         LOGGER.error(f"❌ Error al crear la base de datos: {e.pgcode} - {e.pgerror}")
 
 def get_connection():
-    """Devuelve una conexión a PostgreSQL."""
+    """Returns a connection to PostgreSQL."""
     return psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT)
 
 def init_db():
-    """Crea la tabla si no existe."""
+    """Create the table if it does not exist."""
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
@@ -54,7 +54,7 @@ def init_db():
 
 
 def save_to_db(url, file_ids, nombre, artista, album, fecha, imagen_url):
-    """Guarda o actualiza la información en la base de datos."""
+    """Saves or updates the information in the database."""
     if not file_ids:
         LOGGER.warning("⚠️ Lista de file_ids vacía, no se guardará en la base de datos")
         return
@@ -81,7 +81,7 @@ def save_to_db(url, file_ids, nombre, artista, album, fecha, imagen_url):
         LOGGER.error(f"❌ Error al guardar en la base de datos: {e.pgcode} - {e.pgerror}")
 
 def get_from_db(url):
-    """Obtiene la información asociada a una URL desde la base de datos."""
+    """Gets the information associated with a URL from the database."""
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
@@ -94,4 +94,4 @@ def get_from_db(url):
                 return row
     except psycopg2.Error as e:
         LOGGER.error(f"❌ Error al consultar la URL {url} en la base de datos: {e.pgcode} - {e.pgerror}")
-    return None  # Devuelve None en caso de error
+    return None  # Returns None in case of error
