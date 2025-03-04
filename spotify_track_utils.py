@@ -53,7 +53,7 @@ def match_track_with_file(archivo, url):
         # Compare the name of the song with the file name
         if tracks_info[url_track] == name_file:
             LOGGER.info(f"Se encontró la canción: {tracks_info[url_track]}")
-            return url_track
+            return url_track, info_song
     return None
 
 

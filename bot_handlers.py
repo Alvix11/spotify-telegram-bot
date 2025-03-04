@@ -88,9 +88,8 @@ async def handle_link(update: Update, context: CallbackContext) -> None:
                     file_ids.append(file_id)
                     await context.bot.send_audio(chat_id=TELEGRAM_CHANNEL_ID, audio=file_id)
                     
-                    url_track = match_track_with_file(file, url_clean)
+                    url_track, info_song = match_track_with_file(file, url_clean)
                     if url_track:
-                        info_song = get_info_song(url_track)
                         if info_song:
                             name, artist, album, date, image_url = info_song
                             save_to_db(url_track, [file_id], name, artist, album, date, image_url)
