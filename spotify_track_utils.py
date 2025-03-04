@@ -1,11 +1,11 @@
 import requests
-from spotify import obtener_token, get_info_song
+from spotify import get_token, get_info_song
 import os
 from config import LOGGER
 
 def obtener_urls_album(url_album):
     """Gets the URLs of each song in an album from Spotify."""
-    token = obtener_token()  
+    token = get_token()  
     if not token:
         print("Error: No se pudo obtener el token de Spotify.")
         return None
