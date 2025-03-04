@@ -7,13 +7,13 @@ def get_urls_album(url_album):
     """Gets the URLs of each song in an album from Spotify."""
     token = get_token()  
     if not token:
-        LOGGER.warning("Error: No se pudo obtener el token de Spotify.")
+        LOGGER.warning(f"Error no se pudo obtener el token de Spotify: {token}")
         return None
 
     try:
         album_id = url_album.split("/album/")[1].split("?")[0]
     except IndexError:
-        LOGGER.warning("Error: URL del álbum no válida.")
+        LOGGER.warning(f"Error la URL del álbum no válida: {album_id}")
         return None
 
     album_url = f"https://api.spotify.com/v1/albums/{album_id}"
