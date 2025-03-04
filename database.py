@@ -39,12 +39,12 @@ def init_db():
                     CREATE TABLE IF NOT EXISTS music_cache (
                         url TEXT PRIMARY KEY,
                         file_ids TEXT,
-                        nombre TEXT,
-                        artista TEXT,
+                        name TEXT,
+                        artist TEXT,
                         album TEXT,
-                        fecha TEXT,
-                        imagen_url TEXT,
-                        UNIQUE(nombre, artista, album)
+                        date TEXT,
+                        image_url TEXT,
+                        UNIQUE(name, artist, album)
                     )
                 """)
                 conn.commit()
@@ -53,7 +53,7 @@ def init_db():
         LOGGER.error(f"❌ Error al crear la tabla: {e.pgcode} - {e.pgerror}")
 
 
-def save_to_db(url, file_ids, nombre, artista, album, fecha, imagen_url):
+def save_to_db(url, file_ids, name, artist, album, date, image_url):
     """Saves or updates the information in the database."""
     if not file_ids:
         LOGGER.warning("⚠️ Lista de file_ids vacía, no se guardará en la base de datos")
@@ -65,16 +65,16 @@ def save_to_db(url, file_ids, nombre, artista, album, fecha, imagen_url):
         with get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO music_cache (url, file_ids, nombre, artista, album, fecha, imagen_url)
+                    INSERT INTO music_cache (url, file_ids, name, artist, album, date, image_url)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (url) DO UPDATE 
                     SET file_ids = EXCLUDED.file_ids, 
-                        nombre = EXCLUDED.nombre, 
-                        artista = EXCLUDED.artista, 
+                        name = EXCLUDED.name, 
+                        artist = EXCLUDED.artist, 
                         album = EXCLUDED.album, 
-                        fecha = EXCLUDED.fecha, 
-                        imagen_url = EXCLUDED.imagen_url;
-                """, (url, file_ids_str, nombre, artista, album, fecha, imagen_url))
+                        date = EXCLUDED.date, 
+                        image_url = EXCLUDED.image_url;
+                """, (url, file_ids_str, name, artist, album, date, image_url))
                 conn.commit()
                 LOGGER.info("✅ Datos guardados o actualizados en la base de datos.")
     except psycopg2.Error as e:
@@ -85,7 +85,7 @@ def get_from_db(url):
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT file_ids, nombre, artista, album, fecha, imagen_url FROM music_cache WHERE url = %s", (url,))
+                cursor.execute("SELECT file_ids, name, artist, album, date, image_url FROM music_cache WHERE url = %s", (url,))
                 row = cursor.fetchone()
                 if row:
                     LOGGER.info(f"✅ Información obtenida de la base de datos para la URL: {url}")
