@@ -63,7 +63,7 @@ def get_info_song(url):
         LOGGER.error(f"Error obteniendo la información del track: {response.status_code}")
         return None
 
-def obtener_info_album(url):
+def get_info_album(url):
     """Gets information about an album given the Spotify link."""
     token = get_token()
     if not token:
@@ -81,12 +81,12 @@ def obtener_info_album(url):
     
     if response.status_code == 200:
         album_data = response.json()
-        nombre_album = album_data.get('name')
-        artista = album_data.get('artists', [{}])[0].get('name')
-        fecha = album_data.get('release_date')
-        imagen_url = album_data.get('images', [{}])[0].get('url')
-        canciones = album_data.get('tracks', {}).get('items', [])
-        return nombre_album, artista, fecha, imagen_url, canciones
+        name_album = album_data.get('name')
+        artist = album_data.get('artists', [{}])[0].get('name')
+        date = album_data.get('release_date')
+        image_url = album_data.get('images', [{}])[0].get('url')
+        songs = album_data.get('tracks', {}).get('items', [])
+        return name_album, artist, date, image_url, songs
     else:
         LOGGER.error(f"Error obteniendo la información del álbum: {response.status_code}")
         return None
